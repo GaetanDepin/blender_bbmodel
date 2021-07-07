@@ -31,7 +31,7 @@ def create_mesh(element):
     return cube
 
 def load_uv(element, content, mesh):
-    new_uv = mesh.uv_layers[0] 
+    new_uv = mesh.uv_layers[0]
     img_width = content["resolution"]["width"]
     img_height = content["resolution"]["height"]
 
@@ -45,6 +45,19 @@ def load_uv(element, content, mesh):
         new_uv.data[index + 2].uv = (bottom_right[0], top_left[1])
         new_uv.data[index + 3].uv = bottom_right
 
+def load_outline(outline, meshes):
+    o = bpy.data.objects.new("empty", None)
+    bpy.context.scene.collection.objects.link(o)
+    o.empty_display_size = 2
+    o.empty_display_type = 'PLAIN_AXES'
+    o.name = outline["name"]
+    for child in outline["children"]:
+        if type(child) is dict:
+            c = load_outline(child, meshes)
+            c.parent = o
+        else:
+            meshes[child].parent = o
+    return o
 
 def load(operator, context, filepath="", global_matrix=None):
     print("load", filepath)
@@ -52,6 +65,8 @@ def load(operator, context, filepath="", global_matrix=None):
     content = json.load(file)
     
     mat = None
+    meshes = {}
+
     for texture in content["textures"]:
         decode = base64.b64decode(texture["source"].split(",")[1])
         # file = tempfile.NamedTemporaryFile()
@@ -74,11 +89,14 @@ def load(operator, context, filepath="", global_matrix=None):
             mesh.data.materials[0] = mat
         else:
             mesh.data.materials.append(mat)
-    
+        meshes[element["uuid"]] = mesh
+    for outline in content["outliner"]:
+        load_outline(outline, meshes)
     return {"FINISHED"}
 
 if __name__ == "__main__":
-    filepath = "/home/gaetan/Documents/mindustry/test.bbmodel"
+    # filepath = "/home/gaetan/Documents/mindustry/test.bbmodel"
+    filepath = "/home/gaetan/Documents/mindustry/blockbench_model/character/character.bbmodel"
     # filepath = "/home/gaetan/Documents/mindustry/blockbench_model/item/circuit_board.bbmodel"
     # filepath = "/home/gaetan/Documents/mindustry/blockbench_model/item/copper_ore.bbmodel"
     # filepath = "/home/gaetan/Documents/mindustry/blockbench_model/item/copper_wire.bbmodel"
