@@ -32,10 +32,13 @@ def create_mesh(element):
     cube.location = center
     # cube.location = (pos[X_INDEX] + center[0], pos[Y_INDEX] + center[1], pos[Z_INDEX] + center[2])
     cube.dimensions = (x, y, z)
+    bpy.context.scene.cursor.location = (pos[X_INDEX], pos[Y_INDEX], pos[Z_INDEX])
+    bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
     if "rotation" in element:
         rot = element["rotation"]
         cube.rotation_euler = (math.radians(rot[X_INDEX]), math.radians(rot[Y_INDEX]), math.radians(rot[Z_INDEX]))
-    bpy.ops.object.transform_apply(location = False, scale = True, rotation = False)
+    bpy.ops.object.transform_apply(location = False, scale = True, rotation = True)
+    bpy.context.scene.cursor.location = (0, 0, 0)
     return cube
 
 def load_uv(element, content, mesh):
@@ -123,15 +126,16 @@ def load(operator, context, filepath="", global_matrix=None):
     for outline in content["outliner"]:
         if type(outline) is dict:
             load_outline(outline, meshes, (0, 0, 0))
-    # if "animations" in content and len(content["animations"]) > 0:
-    #     load_animation(content["animations"][0], meshes)
+    if "animations" in content and len(content["animations"]) > 0:
+        load_animation(content["animations"][0], meshes)
     return {"FINISHED"}
 
 if __name__ == "__main__":
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/test.bbmodel"
+    filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/factory/furnace.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/factory/welder.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/character/character.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/circuit_board.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/copper_ore.bbmodel"
-    filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/copper_wire.bbmodel"
+    # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/copper_wire.bbmodel"
     load(None, None, filepath, None)
