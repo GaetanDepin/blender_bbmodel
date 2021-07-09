@@ -29,7 +29,8 @@ def create_mesh(element):
     z = abs(from_coord[Z_INDEX] - to_coord[Z_INDEX])
     center = (from_coord[X_INDEX] + x / 2, from_coord[Y_INDEX] + y / 2, from_coord[Z_INDEX] + z / 2)
     # cube.location = (pos[X_INDEX], pos[Y_INDEX], pos[Z_INDEX])
-    cube.location = (pos[X_INDEX] + center[0], pos[Y_INDEX] + center[1], pos[Z_INDEX] + center[2])
+    cube.location = center
+    # cube.location = (pos[X_INDEX] + center[0], pos[Y_INDEX] + center[1], pos[Z_INDEX] + center[2])
     cube.dimensions = (x, y, z)
     if "rotation" in element:
         rot = element["rotation"]
@@ -92,7 +93,7 @@ def load(operator, context, filepath="", global_matrix=None):
     print("load", filepath)
     file = open(filepath, "rb")
     content = json.load(file)
-    
+
     mat = None
     meshes = {}
 
@@ -128,9 +129,9 @@ def load(operator, context, filepath="", global_matrix=None):
 
 if __name__ == "__main__":
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/test.bbmodel"
-    filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/factory/welder.bbmodel"
+    # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/factory/welder.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/character/character.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/circuit_board.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/copper_ore.bbmodel"
-    # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/copper_wire.bbmodel"
+    filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/copper_wire.bbmodel"
     load(None, None, filepath, None)
