@@ -2,24 +2,24 @@ import json
 import bpy
 import math
 import base64
-import tempfile
 
 X_INDEX = 2
 Z_INDEX = 1
 Y_INDEX = 0
 FACE_ORDER = ["north", "east", "south", "west", "down", "up"]
 FPS = 24
+SCALE = 0.1
 
 def get_rotation(rot):
     return (math.radians(float(rot["z"])), math.radians(float(rot["x"])), math.radians(float(rot["y"])))
 
 def create_mesh(element):
     bpy.ops.mesh.primitive_cube_add()
-    
+
     name = element["uuid"]
-    from_coord = element["from"]
-    to_coord = element["to"]
-    pos = element["origin"]
+    from_coord = [elem * SCALE for elem in element["from"]]
+    to_coord = [elem * SCALE for elem in element["to"]]
+    pos = [elem * SCALE for elem in element["origin"]]
 
     cube = bpy.context.selected_objects[0]
     cube.name = name
@@ -62,7 +62,7 @@ def load_outline(outline, meshes, parent_pos):
     o.empty_display_size = 2
     o.empty_display_type = 'PLAIN_AXES'
     o.name = outline["name"]
-    pos = outline["origin"]
+    pos = [elem * SCALE for elem in outline["origin"]]
     o.location = (pos[X_INDEX] - parent_pos[X_INDEX], pos[Y_INDEX] - parent_pos[Y_INDEX], pos[Z_INDEX] - parent_pos[Z_INDEX])
 
     for child in outline["children"]:
@@ -132,9 +132,9 @@ def load(operator, context, filepath="", global_matrix=None):
 
 if __name__ == "__main__":
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/test.bbmodel"
-    filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/factory/furnace.bbmodel"
+    # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/factory/furnace.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/factory/welder.bbmodel"
-    # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/character/character.bbmodel"
+    filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/character/character.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/circuit_board.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/copper_ore.bbmodel"
     # filepath = "/home/gaetan/Documents/blender_bbmodel/blockbench_model/item/copper_wire.bbmodel"
